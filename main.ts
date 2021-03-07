@@ -182,11 +182,11 @@ namespace SpriteKind {
 }
 
 //  LADO impar máximo de 255
-let LADO = 7
+let LADO = 77
 let MURO = 0
 let PASILLO = 1
 let PUERTA = 2
-let NUM_FANTASMAS = 1
+let NUM_FANTASMAS = 16
 let NUM_ARMAS = NUM_FANTASMAS * 2
 let borde = randint(0, 3)
 let armadillo = false

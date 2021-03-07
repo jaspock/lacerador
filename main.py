@@ -138,11 +138,11 @@ class SpriteKind:
     arma=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=7
+LADO=77
 MURO=0
 PASILLO=1
 PUERTA=2
-NUM_FANTASMAS=1
+NUM_FANTASMAS=16
 NUM_ARMAS=NUM_FANTASMAS*2
 borde=randint(0,3)
 armadillo=False
