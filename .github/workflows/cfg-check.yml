@@ -1,7 +1,10 @@
 name: Check pxt.json
 
 on:
-  push
+  push:
+    branches:
+      - 'master'
+      - 'main'
 
 jobs:
   check-cfg:
@@ -18,7 +21,7 @@ jobs:
       - name: npm install
         run: |
           npm install -g pxt
-          pxt target arcade
+          pxt target arcadeDon't run action on release build tag uploads
       - name: Checkout current state
         run: |
           git checkout -- .
