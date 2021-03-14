@@ -129,6 +129,18 @@ function aleatorio_impar(abajo: number, arriba: number): number {
     
 }
 
+function aleatorio_par(abajo: number, arriba: number): number {
+    let nap = randint(abajo, arriba)
+    if (nap % 2 == 0) {
+        return nap
+    } else if (nap == arriba) {
+        return nap - 1
+    } else {
+        return nap + 1
+    }
+    
+}
+
 function crea_laberinto(lab: number[][], visitado: boolean[][]) {
     let actual: number[];
     let vecinitos: number[][];
@@ -178,6 +190,16 @@ function crea_puerta(lab: number[][]) {
     lab[x][y] = PUERTA
 }
 
+function quita_muretes(lab: number[][]) {
+    let x: number;
+    let y: number;
+    for (let i = 0; i < MUROS_DESAPARECIDOS; i++) {
+        x = aleatorio_par(1, LADO - 2)
+        y = aleatorio_par(1, LADO - 2)
+        lab[x][y] = PASILLO
+    }
+}
+
 function crea_cruz(lab: number[][], visitado: boolean[][]) {
     let muro: number[];
     let xmuro: number;
@@ -200,7 +222,8 @@ namespace SpriteKind {
 }
 
 //  LADO impar máximo de 255
-let LADO = 7
+let LADO = 17
+let MUROS_DESAPARECIDOS = LADO / 1
 let MURO = 0
 let PASILLO = 1
 let PUERTA = 2
@@ -208,8 +231,6 @@ let NUM_FANTASMAS = 1
 let NUM_ARMAS = NUM_FANTASMAS * 2
 let borde = randint(0, 3)
 let armadillo = false
-// if teseo.overlaps_with():
-//     game.over(True)
 let lab : number[][] = []
 let visitado : boolean[][] = []
 sprites.onOverlap(SpriteKind.Player, SpriteKind.fantasma, function choca_chup(p: Sprite, f: Sprite) {
@@ -307,4 +328,5 @@ scene.cameraFollowSprite(teseo)
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
 crea_puerta(lab)
+quita_muretes(lab)
 pinta_mosaicos(lab)

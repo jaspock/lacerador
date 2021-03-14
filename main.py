@@ -95,6 +95,15 @@ def aleatorio_impar(abajo,arriba):
     else:
         return nai+1
 
+def aleatorio_par(abajo,arriba):
+    nap=randint(abajo,arriba)
+    if nap%2==0:
+        return nap
+    elif nap==arriba:
+        return nap-1
+    else:
+        return nap+1
+
 def crea_laberinto(lab:List[List[number]], visitado:List[List[bool]]):
     pila: List[List[number]]= []
     pila.append([aleatorio_impar(0,LADO-1),aleatorio_impar(0,LADO-1)])
@@ -125,6 +134,12 @@ def crea_puerta(lab:List[List[number]]):
         y=aleatorio_impar(0, LADO-1)
         x=LADO-1
     lab[x][y]=PUERTA
+
+def quita_muretes(lab:List[List[number]]):
+    for i in range(MUROS_DESAPARECIDOS):
+        x= aleatorio_par(1, LADO-2)
+        y= aleatorio_par(1, LADO-2)
+        lab[x][y]=PASILLO
 
 def crea_cruz(lab:List[List[number]], visitado:List[List[bool]]):
     celda=[3,3]
@@ -157,7 +172,8 @@ class SpriteKind:
     puerta=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=7
+LADO=17
+MUROS_DESAPARECIDOS=LADO/1
 MURO=0
 PASILLO=1
 PUERTA=2
@@ -165,10 +181,6 @@ NUM_FANTASMAS=1
 NUM_ARMAS=NUM_FANTASMAS*2
 borde=randint(0,3)
 armadillo=False
-
-#if teseo.overlaps_with():
-    #    game.over(True)
-
 
 
 lab: List[List[number]] = []
@@ -255,14 +267,10 @@ teseo.set_bounce_on_wall(True)
 # mapa del tamaño máximo: 255x255
 tiles.set_tilemap(tilemap("""level1"""))
 
-
-
-
-
-
 scene.camera_follow_sprite(teseo)
 
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
 crea_puerta(lab)
+quita_muretes(lab)
 pinta_mosaicos(lab)
