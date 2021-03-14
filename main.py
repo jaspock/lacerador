@@ -21,9 +21,25 @@ def pinta_mosaicos(lab:List[List[number]]):
             elif lab[i][j]==PASILLO:
                 tiles.set_tile_at(tiles.get_tile_location(i, j), sprites.dungeon.dark_ground_center)
             elif lab[i][j]==PUERTA:
-                tiles.set_tile_at(tiles.get_tile_location(i, j), assets.tile("""
-                puerta
-                """))
+                puerta = sprites.create(img("""
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                """),SpriteKind.puerta)
+                puerta.set_position(i*16+8, j*16+8)
 
 
 def vecinos(c:List[number]):
@@ -131,18 +147,21 @@ def coge_arma(p,a):
     armadillo=True
     a.destroy(effects.star_field,500)
 
+def toca_puerta(p,puerta):
+    game.over(True,effects.blizzard)
 
 @namespace
 class SpriteKind:
     fantasma=SpriteKind.create()
     arma=SpriteKind.create()
+    puerta=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=77
+LADO=7
 MURO=0
 PASILLO=1
 PUERTA=2
-NUM_FANTASMAS=16
+NUM_FANTASMAS=1
 NUM_ARMAS=NUM_FANTASMAS*2
 borde=randint(0,3)
 armadillo=False
@@ -158,6 +177,8 @@ visitado: List[List[bool]] = []
 
 sprites.on_overlap(SpriteKind.player, SpriteKind.fantasma, choca_chup)
 sprites.on_overlap(SpriteKind.player, SpriteKind.arma, coge_arma)
+sprites.on_overlap(SpriteKind.player, SpriteKind.puerta, toca_puerta)
+
 
 scene.set_background_color(3)
 teseo = sprites.create(img("""

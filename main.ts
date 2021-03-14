@@ -18,6 +18,7 @@ function init_lab(lab: number[][], visitado: boolean[][]) {
 }
 
 function pinta_mosaicos(lab: number[][]) {
+    let puerta: Sprite;
     for (let i = 0; i < LADO; i++) {
         for (let j = 0; j < LADO; j++) {
             if (lab[i][j] == MURO) {
@@ -26,9 +27,25 @@ function pinta_mosaicos(lab: number[][]) {
             } else if (lab[i][j] == PASILLO) {
                 tiles.setTileAt(tiles.getTileLocation(i, j), sprites.dungeon.darkGroundCenter)
             } else if (lab[i][j] == PUERTA) {
-                tiles.setTileAt(tiles.getTileLocation(i, j), assets.tile`
-                puerta
-                `)
+                puerta = sprites.create(img`
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e f f f f e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                    e e e e e e e e e e e e e e e e
+                `, SpriteKind.puerta)
+                puerta.setPosition(i * 16 + 8, j * 16 + 8)
             }
             
         }
@@ -179,14 +196,15 @@ function crea_cruz(lab: number[][], visitado: boolean[][]) {
 namespace SpriteKind {
     export const fantasma = SpriteKind.create()
     export const arma = SpriteKind.create()
+    export const puerta = SpriteKind.create()
 }
 
 //  LADO impar máximo de 255
-let LADO = 77
+let LADO = 7
 let MURO = 0
 let PASILLO = 1
 let PUERTA = 2
-let NUM_FANTASMAS = 16
+let NUM_FANTASMAS = 1
 let NUM_ARMAS = NUM_FANTASMAS * 2
 let borde = randint(0, 3)
 let armadillo = false
@@ -206,6 +224,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.arma, function coge_arma(p: Spri
     
     armadillo = true
     a.destroy(effects.starField, 500)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.puerta, function toca_puerta(p: Sprite, puerta: Sprite) {
+    game.over(true, effects.blizzard)
 })
 scene.setBackgroundColor(3)
 let teseo = sprites.create(img`
