@@ -193,10 +193,28 @@ function crea_puerta(lab: number[][]) {
 function quita_muretes(lab: number[][]) {
     let x: number;
     let y: number;
-    for (let i = 0; i < MUROS_DESAPARECIDOS; i++) {
-        x = aleatorio_par(1, LADO - 2)
-        y = aleatorio_par(1, LADO - 2)
-        lab[x][y] = PASILLO
+    if (LADO < 8) {
+        return
+    }
+    
+    let MAX_INTENTOS = 10000
+    let intentos = 0
+    let muros = 0
+    while (muros < MUROS_DESAPARECIDOS && intentos < MAX_INTENTOS) {
+        x = aleatorio_par(3, LADO - 4)
+        y = aleatorio_par(3, LADO - 4)
+        if (lab[x][y] == MURO) {
+            if (lab[x - 1][y] == MURO && lab[x - 2][y] == MURO && lab[x + 1][y] == MURO && lab[x + 2][y] == MURO && lab[x][y + 1] != MURO && lab[x][y - 1] != MURO) {
+                lab[x][y] = PASILLO
+                muros = muros + 1
+            } else if (lab[x][y - 1] == MURO && lab[x][y - 2] == MURO && lab[x][y + 1] == MURO && lab[x][y + 2] == MURO && lab[x + 1][y] != MURO && lab[x - 1][y] != MURO) {
+                lab[x][y] = PASILLO
+                muros = muros + 1
+            }
+            
+        }
+        
+        intentos = intentos + 1
     }
 }
 
@@ -222,8 +240,8 @@ namespace SpriteKind {
 }
 
 //  LADO impar máximo de 255
-let LADO = 17
-let MUROS_DESAPARECIDOS = LADO / 1
+let LADO = 33
+let MUROS_DESAPARECIDOS = LADO
 let MURO = 0
 let PASILLO = 1
 let PUERTA = 2
