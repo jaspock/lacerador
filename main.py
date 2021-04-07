@@ -136,10 +136,26 @@ def crea_puerta(lab:List[List[number]]):
     lab[x][y]=PUERTA
 
 def quita_muretes(lab:List[List[number]]):
-    for i in range(MUROS_DESAPARECIDOS):
-        x= aleatorio_par(1, LADO-2)
-        y= aleatorio_par(1, LADO-2)
-        lab[x][y]=PASILLO
+    if LADO < 8:
+        return
+    MAX_INTENTOS= 10000
+    intentos= 0
+    muros= 0
+    while muros < MUROS_DESAPARECIDOS and intentos < MAX_INTENTOS:
+        x= aleatorio_par(3, LADO-4)
+        y= aleatorio_par(3, LADO-4)
+        if lab[x][y]==MURO:
+            if lab[x-1][y]==MURO and lab[x-2][y]==MURO and \
+               lab[x+1][y]==MURO and lab[x+2][y]==MURO and \
+               lab[x][y+1]!=MURO and lab[x][y-1]!=MURO:
+                lab[x][y]= PASILLO
+                muros= muros+1
+            elif lab[x][y-1]==MURO and lab[x][y-2]==MURO and \
+                 lab[x][y+1]==MURO and lab[x][y+2]==MURO and \
+                 lab[x+1][y]!=MURO and lab[x-1][y]!=MURO: 
+                lab[x][y]= PASILLO
+                muros= muros+1
+        intentos= intentos+1
 
 def crea_cruz(lab:List[List[number]], visitado:List[List[bool]]):
     celda=[3,3]
@@ -172,8 +188,8 @@ class SpriteKind:
     puerta=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=7
-MUROS_DESAPARECIDOS=LADO/1
+LADO=33
+MUROS_DESAPARECIDOS=LADO
 MURO=0
 PASILLO=1
 PUERTA=2
