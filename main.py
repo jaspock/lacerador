@@ -200,7 +200,7 @@ class SpriteKind:
     teletransportador=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=255
+LADO= 10
 if LADO % 2 == 0:
     LADO += 1
 if LADO > 255:
@@ -306,5 +306,6 @@ scene.camera_follow_sprite(teseo)
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
 crea_puerta(lab)
+crea_teletranspotador(lab)
 quita_muretes(lab)
 pinta_mosaicos(lab)

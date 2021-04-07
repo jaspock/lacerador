@@ -250,7 +250,7 @@ namespace SpriteKind {
 }
 
 //  LADO impar máximo de 255
-let LADO = 255
+let LADO = 10
 if (LADO % 2 == 0) {
     LADO += 1
 }
@@ -368,5 +368,6 @@ scene.cameraFollowSprite(teseo)
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
 crea_puerta(lab)
+crea_teletranspotador(lab)
 quita_muretes(lab)
 pinta_mosaicos(lab)
