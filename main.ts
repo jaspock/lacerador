@@ -46,6 +46,9 @@ function pinta_mosaicos(lab: number[][]) {
                     e e e e e e e e e e e e e e e e
                 `, SpriteKind.puerta)
                 puerta.setPosition(i * 16 + 8, j * 16 + 8)
+            } else if (lab[i][j] == TELETRANSPORTADOR) {
+                puerta = sprites.create(assets.image`teletransportador`, SpriteKind.teletransportador)
+                puerta.setPosition(i * 16 + 8, j * 16 + 8)
             }
             
         }
@@ -190,6 +193,12 @@ function crea_puerta(lab: number[][]) {
     lab[x][y] = PUERTA
 }
 
+function crea_teletranspotador(lab: number[][]) {
+    let x = aleatorio_impar(0, LADO - 1)
+    let y = aleatorio_impar(0, LADO - 1)
+    lab[x][y] = TELETRANSPORTADOR
+}
+
 function quita_muretes(lab: number[][]) {
     let x: number;
     let y: number;
@@ -197,7 +206,7 @@ function quita_muretes(lab: number[][]) {
         return
     }
     
-    let MAX_INTENTOS = 10000
+    let MAX_INTENTOS = LADO * LADO * 10
     let intentos = 0
     let muros = 0
     while (muros < MUROS_DESAPARECIDOS && intentos < MAX_INTENTOS) {
@@ -237,14 +246,24 @@ namespace SpriteKind {
     export const fantasma = SpriteKind.create()
     export const arma = SpriteKind.create()
     export const puerta = SpriteKind.create()
+    export const teletransportador = SpriteKind.create()
 }
 
 //  LADO impar máximo de 255
-let LADO = 33
+let LADO = 255
+if (LADO % 2 == 0) {
+    LADO += 1
+}
+
+if (LADO > 255) {
+    LADO = 255
+}
+
 let MUROS_DESAPARECIDOS = LADO
 let MURO = 0
 let PASILLO = 1
 let PUERTA = 2
+let TELETRANSPORTADOR = 3
 let NUM_FANTASMAS = 6
 let NUM_ARMAS = NUM_FANTASMAS * 2
 let borde = randint(0, 3)
@@ -266,6 +285,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.arma, function coge_arma(p: Spri
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.puerta, function toca_puerta(p: Sprite, puerta: Sprite) {
     game.over(true, effects.blizzard)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.teletransportador, function toca_teletransportador(p: Sprite, t: Sprite) {
+    teseo.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
 })
 scene.setBackgroundColor(3)
 let teseo = sprites.create(img`

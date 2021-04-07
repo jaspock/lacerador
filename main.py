@@ -40,6 +40,9 @@ def pinta_mosaicos(lab:List[List[number]]):
                     e e e e e e e e e e e e e e e e
                 """),SpriteKind.puerta)
                 puerta.set_position(i*16+8, j*16+8)
+            elif lab[i][j]==TELETRANSPORTADOR:
+                puerta = sprites.create(assets.image("""teletransportador"""),SpriteKind.teletransportador)
+                puerta.set_position(i*16+8, j*16+8)
 
 
 def vecinos(c:List[number]):
@@ -135,10 +138,15 @@ def crea_puerta(lab:List[List[number]]):
         x=LADO-1
     lab[x][y]=PUERTA
 
+def crea_teletranspotador(lab:List[List[number]]):
+    x=aleatorio_impar(0, LADO-1)
+    y=aleatorio_impar(0, LADO-1)
+    lab[x][y]=TELETRANSPORTADOR
+
 def quita_muretes(lab:List[List[number]]):
     if LADO < 8:
         return
-    MAX_INTENTOS= 10000
+    MAX_INTENTOS= LADO*LADO*10
     intentos= 0
     muros= 0
     while muros < MUROS_DESAPARECIDOS and intentos < MAX_INTENTOS:
@@ -181,18 +189,27 @@ def coge_arma(p,a):
 def toca_puerta(p,puerta):
     game.over(True,effects.blizzard)
 
+def toca_teletransportador(p,t):
+    teseo.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8)
+
 @namespace
 class SpriteKind:
     fantasma=SpriteKind.create()
     arma=SpriteKind.create()
     puerta=SpriteKind.create()
+    teletransportador=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=33
+LADO=255
+if LADO % 2 == 0:
+    LADO += 1
+if LADO > 255:
+    LADO = 255
 MUROS_DESAPARECIDOS=LADO
 MURO=0
 PASILLO=1
 PUERTA=2
+TELETRANSPORTADOR=3
 NUM_FANTASMAS=6
 NUM_ARMAS=NUM_FANTASMAS*2
 borde=randint(0,3)
@@ -206,6 +223,7 @@ visitado: List[List[bool]] = []
 sprites.on_overlap(SpriteKind.player, SpriteKind.fantasma, choca_chup)
 sprites.on_overlap(SpriteKind.player, SpriteKind.arma, coge_arma)
 sprites.on_overlap(SpriteKind.player, SpriteKind.puerta, toca_puerta)
+sprites.on_overlap(SpriteKind.player, SpriteKind.teletransportador, toca_teletransportador)
 
 
 scene.set_background_color(3)

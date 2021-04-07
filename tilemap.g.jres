@@ -10,6 +10,12 @@
         "tilemapTile": true,
         "displayName": "puerta"
     },
+    "tile2": {
+        "data": "hwQQABAAAACIiIiIiIiIiJiZmZmZmZmJmIiIiIiIiImYmJmZmZmJiZiYiIiIiImJmJiYmZmJiYmYmJiIiImJiZiYmJiGiYmJmJiYaImJiYmYmJiIiImJiZiYmJmZiYmJmJiIiIiIiYmYmJmZmZmJiZiIiIiIiIiJmJmZmZmZmYmIiIiIiIiIiA==",
+        "mimeType": "image/x-mkcd-f4",
+        "tilemapTile": true,
+        "displayName": "teletransportador"
+    },
     "level1": {
         "id": "level1",
         "mimeType": "application/mkcd-tilemap",
