@@ -194,9 +194,13 @@ function crea_puerta(lab: number[][]) {
 }
 
 function crea_teletranspotador(lab: number[][]) {
-    let x = aleatorio_impar(0, LADO - 1)
-    let y = aleatorio_impar(0, LADO - 1)
-    lab[x][y] = TELETRANSPORTADOR
+    let x: number;
+    let y: number;
+    for (let _ = 0; _ < NUM_TELETRANSPORTADORES; _++) {
+        x = aleatorio_impar(0, LADO - 1)
+        y = aleatorio_impar(0, LADO - 1)
+        lab[x][y] = TELETRANSPORTADOR
+    }
 }
 
 function quita_muretes(lab: number[][]) {
@@ -266,8 +270,10 @@ let PUERTA = 2
 let TELETRANSPORTADOR = 3
 let NUM_FANTASMAS = 6
 let NUM_ARMAS = NUM_FANTASMAS * 2
+let NUM_TELETRANSPORTADORES = 2
 let borde = randint(0, 3)
 let armadillo = false
+let avisado = false
 let lab : number[][] = []
 let visitado : boolean[][] = []
 sprites.onOverlap(SpriteKind.Player, SpriteKind.fantasma, function choca_chup(p: Sprite, f: Sprite) {
@@ -287,27 +293,22 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.puerta, function toca_puerta(p: 
     game.over(true, effects.blizzard)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.teletransportador, function toca_teletransportador(p: Sprite, t: Sprite) {
-    teseo.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
+    
+    if (!avisado) {
+        avisado = true
+        game.showLongText("Pulsa A para teletransportarte cuando pases por un teletransportador.", DialogLayout.Bottom)
+        pause(100)
+    }
+    
+    if (controller.A.isPressed()) {
+        teseo.startEffect(effects.spray, 500)
+        music.sonar.play()
+        teseo.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
+    }
+    
 })
 scene.setBackgroundColor(3)
-let teseo = sprites.create(img`
-    . . . . . . . . . . . . . . . .
-    . . . . . f f f f f f . . . . .
-    . . . f f e e e e f 2 f . . . .
-    . . f f e e e e f 2 2 2 f . . .
-    . . f e e e f f 2 2 2 2 f . . .
-    . . f f f f 2 2 2 2 2 2 2 f . .
-    . . f 2 2 2 2 f f f f 2 2 f . .
-    . f f f f f f f e e e f f f . .
-    . f f e 4 4 4 b f 4 4 e e f . .
-    . f e e 4 d 4 1 f d d e f . . .
-    . . f e e e e e d d d f . . . .
-    . . . f f 4 d d e 4 5 f . . . .
-    . . . . f e d d e 2 2 f f . . .
-    . . . . f f e e f 5 4 f f . . .
-    . . . . f f f f f f f f . . . .
-    . . . . f f . . . f f f . . . .
-`, SpriteKind.Player)
+let teseo = sprites.create(assets.image`mi teseo`, SpriteKind.Player)
 for (i = 0; i < NUM_FANTASMAS; i++) {
     fantasma = sprites.create(img`
         ........................
@@ -371,3 +372,287 @@ crea_puerta(lab)
 crea_teletranspotador(lab)
 quita_muretes(lab)
 pinta_mosaicos(lab)
+controller.up.onEvent(ControllerButtonEvent.Pressed, function on_up_pressed() {
+    animation.runImageAnimation(teseo, [img`
+                . . . . . . f f f f . . . . . . 
+                        . . . . f f e e e e f f . . . . 
+                        . . . f e e e f f e e e f . . . 
+                        . . f f f f f 2 2 f f f f f . . 
+                        . . f f e 2 e 2 2 e 2 e f f . . 
+                        . . f e 2 f 2 f f 2 f 2 e f . . 
+                        . . f f f 2 2 e e 2 2 f f f . . 
+                        . f f e f 2 f e e f 2 f e f f . 
+                        . f e e f f e e e e f e e e f . 
+                        . . f e e e e e e e e e e f . . 
+                        . . . f e e e e e e e e f . . . 
+                        . . e 4 f f f f f f f f 4 e . . 
+                        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+                        . . 4 4 f 4 4 4 4 4 4 f 4 4 . . 
+                        . . . . . f f f f f f . . . . . 
+                        . . . . . f f . . f f . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . . . f f f f . . . . . . 
+                        . . . . f f e e e e f f . . . . 
+                        . . . f e e e f f e e e f . . . 
+                        . . . f f f f 2 2 f f f f . . . 
+                        . . f f e 2 e 2 2 e 2 e f f . . 
+                        . . f e 2 f 2 f f f 2 f e f . . 
+                        . . f f f 2 f e e 2 2 f f f . . 
+                        . . f e 2 f f e e 2 f e e f . . 
+                        . f f e f f e e e f e e e f f . 
+                        . f f e e e e e e e e e e f f . 
+                        . . . f e e e e e e e e f . . . 
+                        . . . e f f f f f f f f 4 e . . 
+                        . . . 4 f 2 2 2 2 2 e d d 4 . . 
+                        . . . e f f f f f f e e 4 . . . 
+                        . . . . f f f . . . . . . . . .
+            `, img`
+                . . . . . . f f f f . . . . . . 
+                        . . . . f f e e e e f f . . . . 
+                        . . . f e e e f f e e e f . . . 
+                        . . f f f f f 2 2 f f f f f . . 
+                        . . f f e 2 e 2 2 e 2 e f f . . 
+                        . . f e 2 f 2 f f 2 f 2 e f . . 
+                        . . f f f 2 2 e e 2 2 f f f . . 
+                        . f f e f 2 f e e f 2 f e f f . 
+                        . f e e f f e e e e f e e e f . 
+                        . . f e e e e e e e e e e f . . 
+                        . . . f e e e e e e e e f . . . 
+                        . . e 4 f f f f f f f f 4 e . . 
+                        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+                        . . 4 4 f 4 4 4 4 4 4 f 4 4 . . 
+                        . . . . . f f f f f f . . . . . 
+                        . . . . . f f . . f f . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . . . f f f f . . . . . . 
+                        . . . . f f e e e e f f . . . . 
+                        . . . f e e e f f e e e f . . . 
+                        . . . f f f f 2 2 f f f f . . . 
+                        . . f f e 2 e 2 2 e 2 e f f . . 
+                        . . f e f 2 f f f 2 f 2 e f . . 
+                        . . f f f 2 2 e e f 2 f f f . . 
+                        . . f e e f 2 e e f f 2 e f . . 
+                        . f f e e e f e e e f f e f f . 
+                        . f f e e e e e e e e e e f f . 
+                        . . . f e e e e e e e e f . . . 
+                        . . e 4 f f f f f f f f e . . . 
+                        . . 4 d d e 2 2 2 2 2 f 4 . . . 
+                        . . . 4 e e f f f f f f e . . . 
+                        . . . . . . . . . f f f . . . .
+            `], 300, true)
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
+    animation.runImageAnimation(teseo, [img`
+                . . . . f f f f f f . . . . . . 
+                        . . . f 2 f e e e e f f . . . . 
+                        . . f 2 2 2 f e e e e f f . . . 
+                        . . f e e e e f f e e e f . . . 
+                        . f e 2 2 2 2 e e f f f f . . . 
+                        . f 2 e f f f f 2 2 2 e f . . . 
+                        . f f f e e e f f f f f f f . . 
+                        . f e e 4 4 f b e 4 4 e f f . . 
+                        . . f e d d f 1 4 d 4 e e f . . 
+                        . . . f d d d d 4 e e e f . . . 
+                        . . . f e 4 4 4 e e f f . . . . 
+                        . . . f 2 2 2 e d d 4 . . . . . 
+                        . . . f 2 2 2 e d d e . . . . . 
+                        . . . f 5 5 4 f e e f . . . . . 
+                        . . . . f f f f f f . . . . . . 
+                        . . . . . . f f f . . . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . f f f f f f . . . . . . 
+                        . . . f 2 f e e e e f f . . . . 
+                        . . f 2 2 2 f e e e e f f . . . 
+                        . . f e e e e f f e e e f . . . 
+                        . f e 2 2 2 2 e e f f f f . . . 
+                        . f 2 e f f f f 2 2 2 e f . . . 
+                        . f f f e e e f f f f f f f . . 
+                        . f e e 4 4 f b e 4 4 e f f . . 
+                        . . f e d d f 1 4 d 4 e e f . . 
+                        . . . f d d d e e e e e f . . . 
+                        . . . f e 4 e d d 4 f . . . . . 
+                        . . . f 2 2 e d d e f . . . . . 
+                        . . f f 5 5 f e e f f f . . . . 
+                        . . f f f f f f f f f f . . . . 
+                        . . . f f f . . . f f . . . . .
+            `, img`
+                . . . . f f f f f f . . . . . . 
+                        . . . f 2 f e e e e f f . . . . 
+                        . . f 2 2 2 f e e e e f f . . . 
+                        . . f e e e e f f e e e f . . . 
+                        . f e 2 2 2 2 e e f f f f . . . 
+                        . f 2 e f f f f 2 2 2 e f . . . 
+                        . f f f e e e f f f f f f f . . 
+                        . f e e 4 4 f b e 4 4 e f f . . 
+                        . . f e d d f 1 4 d 4 e e f . . 
+                        . . . f d d d d 4 e e e f . . . 
+                        . . . f e 4 4 4 e e f f . . . . 
+                        . . . f 2 2 2 e d d 4 . . . . . 
+                        . . . f 2 2 2 e d d e . . . . . 
+                        . . . f 5 5 4 f e e f . . . . . 
+                        . . . . f f f f f f . . . . . . 
+                        . . . . . . f f f . . . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . f f f f f f . . . . . . 
+                        . . . f 2 f e e e e f f . . . . 
+                        . . f 2 2 2 f e e e e f f . . . 
+                        . . f e e e e f f e e e f . . . 
+                        . f e 2 2 2 2 e e f f f f . . . 
+                        . f 2 e f f f f 2 2 2 e f . . . 
+                        . f f f e e e f f f f f f f . . 
+                        . f e e 4 4 f b e 4 4 e f f . . 
+                        . . f e d d f 1 4 d 4 e e f . . 
+                        . . . f d d d d 4 e e e f . . . 
+                        . . . f e 4 4 4 e d d 4 . . . . 
+                        . . . f 2 2 2 2 e d d e . . . . 
+                        . . f f 5 5 4 4 f e e f . . . . 
+                        . . f f f f f f f f f f . . . . 
+                        . . . f f f . . . f f . . . . .
+            `], 300, true)
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
+    animation.runImageAnimation(teseo, [img`
+                . . . . . . f f f f f f . . . . 
+                        . . . . f f e e e e f 2 f . . . 
+                        . . . f f e e e e f 2 2 2 f . . 
+                        . . . f e e e f f e e e e f . . 
+                        . . . f f f f e e 2 2 2 2 e f . 
+                        . . . f e 2 2 2 f f f f e 2 f . 
+                        . . f f f f f f f e e e f f f . 
+                        . . f f e 4 4 e b f 4 4 e e f . 
+                        . . f e e 4 d 4 1 f d d e f . . 
+                        . . . f e e e 4 d d d d f . . . 
+                        . . . . f f e e 4 4 4 e f . . . 
+                        . . . . . 4 d d e 2 2 2 f . . . 
+                        . . . . . e d d e 2 2 2 f . . . 
+                        . . . . . f e e f 4 5 5 f . . . 
+                        . . . . . . f f f f f f . . . . 
+                        . . . . . . . f f f . . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . . . f f f f f f . . . . 
+                        . . . . f f e e e e f 2 f . . . 
+                        . . . f f e e e e f 2 2 2 f . . 
+                        . . . f e e e f f e e e e f . . 
+                        . . . f f f f e e 2 2 2 2 e f . 
+                        . . . f e 2 2 2 f f f f e 2 f . 
+                        . . f f f f f f f e e e f f f . 
+                        . . f f e 4 4 e b f 4 4 e e f . 
+                        . . f e e 4 d 4 1 f d d e f . . 
+                        . . . f e e e e e d d d f . . . 
+                        . . . . . f 4 d d e 4 e f . . . 
+                        . . . . . f e d d e 2 2 f . . . 
+                        . . . . f f f e e f 5 5 f f . . 
+                        . . . . f f f f f f f f f f . . 
+                        . . . . . f f . . . f f f . . .
+            `, img`
+                . . . . . . f f f f f f . . . . 
+                        . . . . f f e e e e f 2 f . . . 
+                        . . . f f e e e e f 2 2 2 f . . 
+                        . . . f e e e f f e e e e f . . 
+                        . . . f f f f e e 2 2 2 2 e f . 
+                        . . . f e 2 2 2 f f f f e 2 f . 
+                        . . f f f f f f f e e e f f f . 
+                        . . f f e 4 4 e b f 4 4 e e f . 
+                        . . f e e 4 d 4 1 f d d e f . . 
+                        . . . f e e e 4 d d d d f . . . 
+                        . . . . f f e e 4 4 4 e f . . . 
+                        . . . . . 4 d d e 2 2 2 f . . . 
+                        . . . . . e d d e 2 2 2 f . . . 
+                        . . . . . f e e f 4 5 5 f . . . 
+                        . . . . . . f f f f f f . . . . 
+                        . . . . . . . f f f . . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . . . f f f f f f . . . . 
+                        . . . . f f e e e e f 2 f . . . 
+                        . . . f f e e e e f 2 2 2 f . . 
+                        . . . f e e e f f e e e e f . . 
+                        . . . f f f f e e 2 2 2 2 e f . 
+                        . . . f e 2 2 2 f f f f e 2 f . 
+                        . . f f f f f f f e e e f f f . 
+                        . . f f e 4 4 e b f 4 4 e e f . 
+                        . . f e e 4 d 4 1 f d d e f . . 
+                        . . . f e e e 4 d d d d f . . . 
+                        . . . . 4 d d e 4 4 4 e f . . . 
+                        . . . . e d d e 2 2 2 2 f . . . 
+                        . . . . f e e f 4 4 5 5 f f . . 
+                        . . . . f f f f f f f f f f . . 
+                        . . . . . f f . . . f f f . . .
+            `], 300, true)
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed() {
+    animation.runImageAnimation(teseo, [img`
+                . . . . . . f f f f . . . . . . 
+                        . . . . f f f 2 2 f f f . . . . 
+                        . . . f f f 2 2 2 2 f f f . . . 
+                        . . f f f e e e e e e f f f . . 
+                        . . f f e 2 2 2 2 2 2 e e f . . 
+                        . . f e 2 f f f f f f 2 e f . . 
+                        . . f f f f e e e e f f f f . . 
+                        . f f e f b f 4 4 f b f e f f . 
+                        . f e e 4 1 f d d f 1 4 e e f . 
+                        . . f e e d d d d d d e e f . . 
+                        . . . f e e 4 4 4 4 e e f . . . 
+                        . . e 4 f 2 2 2 2 2 2 f 4 e . . 
+                        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+                        . . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
+                        . . . . . f f f f f f . . . . . 
+                        . . . . . f f . . f f . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . . . f f f f . . . . . . 
+                        . . . . f f f 2 2 f f f . . . . 
+                        . . . f f f 2 2 2 2 f f f . . . 
+                        . . f f f e e e e e e f f f . . 
+                        . . f f e 2 2 2 2 2 2 e e f . . 
+                        . f f e 2 f f f f f f 2 e f f . 
+                        . f f f f f e e e e f f f f f . 
+                        . . f e f b f 4 4 f b f e f . . 
+                        . . f e 4 1 f d d f 1 4 e f . . 
+                        . . . f e 4 d d d d 4 e f e . . 
+                        . . f e f 2 2 2 2 e d d 4 e . . 
+                        . . e 4 f 2 2 2 2 e d d e . . . 
+                        . . . . f 4 4 5 5 f e e . . . . 
+                        . . . . f f f f f f f . . . . . 
+                        . . . . f f f . . . . . . . . .
+            `, img`
+                . . . . . . f f f f . . . . . . 
+                        . . . . f f f 2 2 f f f . . . . 
+                        . . . f f f 2 2 2 2 f f f . . . 
+                        . . f f f e e e e e e f f f . . 
+                        . . f f e 2 2 2 2 2 2 e e f . . 
+                        . . f e 2 f f f f f f 2 e f . . 
+                        . . f f f f e e e e f f f f . . 
+                        . f f e f b f 4 4 f b f e f f . 
+                        . f e e 4 1 f d d f 1 4 e e f . 
+                        . . f e e d d d d d d e e f . . 
+                        . . . f e e 4 4 4 4 e e f . . . 
+                        . . e 4 f 2 2 2 2 2 2 f 4 e . . 
+                        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+                        . . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
+                        . . . . . f f f f f f . . . . . 
+                        . . . . . f f . . f f . . . . .
+            `, img`
+                . . . . . . . . . . . . . . . . 
+                        . . . . . . f f f f . . . . . . 
+                        . . . . f f f 2 2 f f f . . . . 
+                        . . . f f f 2 2 2 2 f f f . . . 
+                        . . f f f e e e e e e f f f . . 
+                        . . f e e 2 2 2 2 2 2 e f f . . 
+                        . f f e 2 f f f f f f 2 e f f . 
+                        . f f f f f e e e e f f f f f . 
+                        . . f e f b f 4 4 f b f e f . . 
+                        . . f e 4 1 f d d f 1 4 e f . . 
+                        . . e f e 4 d d d d 4 e f . . . 
+                        . . e 4 d d e 2 2 2 2 f e f . . 
+                        . . . e d d e 2 2 2 2 f 4 e . . 
+                        . . . . e e f 5 5 4 4 f . . . . 
+                        . . . . . f f f f f f f . . . . 
+                        . . . . . . . . . f f f . . . .
+            `], 300, true)
+})
